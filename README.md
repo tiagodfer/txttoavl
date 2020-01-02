@@ -2,6 +2,9 @@
 
 ## changelog
 
+### 1.2.1
+- documentação mais detalhada do código.
+
 ### 1.2.0
 - não cria mais arquivo temporário, dispensando algumas etapas na criação do relatório e corrige bugs.
 

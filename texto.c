@@ -43,7 +43,7 @@ void caixa_baixa_avl(FILE *entrada, PtAVL **avl, int *comp_ger, int *rot, int *o
  * AVL1: ponteiro para a AVL resultante da leitura do texto;
  * COMP: ponteiro para o número de comparações realizadas.
  */
-void le_operacoes(FILE *op, FILE *resultado, PtABP *avl0, PtAVL *avl1, int *comp)
+void le_operacoes(FILE *op, FILE *resultado, PtABP *abp, PtAVL *avl, int *comp)
 {
     char *aux, *palavra, linha[LINHAS];
     int f0, f1;
@@ -56,14 +56,14 @@ void le_operacoes(FILE *op, FILE *resultado, PtABP *avl0, PtAVL *avl1, int *comp
             if(strcmp(aux, "F") == 0 || strcmp(aux, "f") == 0)
             {
                 palavra = strtok(NULL, "\n");
-                frequencia_avl(resultado, avl1, palavra, comp);
+                frequencia_avl(resultado, avl, palavra, comp);
             }
             else if(strcmp(aux, "C") == 0 || strcmp(aux, "c") == 0)
             {
                 f0 = atoi(strtok(NULL, " "));
                 f1 = atoi(strtok(NULL, "\n"));
-                contador_avl(&avl0, avl1, f0, f1, comp);
-                imprime_abp(resultado, avl0, f0, f1, comp);
+                contador_avl(&abp, avl, f0, f1, comp);
+                imprime_abp(resultado, abp, f0, f1, comp);
             }
             aux = strtok(NULL, " ");
         }

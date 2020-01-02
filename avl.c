@@ -320,6 +320,7 @@ PtAVL* insere_avl(PtAVL *avl, char p[], int *comp, int *rot, int *ok)
     else if((compara(avl, p, comp)) == 0)
     {
         avl->frequencia++;
+        *ok = 0;
     }
     else if((compara(avl, p, comp)) > 0)
     {
@@ -334,11 +335,11 @@ PtAVL* insere_avl(PtAVL *avl, char p[], int *comp, int *rot, int *ok)
                 *ok = 0;
                 break;
             case 0:
-                (*comp)++;
+                (*comp)+= 2;
                 avl->fb = 1;
                 break;
             case 1:
-                (*comp)++;
+                (*comp)+= 3;
                 avl=caso_1(avl, comp, rot, ok);
                 break;
             }
@@ -357,11 +358,11 @@ PtAVL* insere_avl(PtAVL *avl, char p[], int *comp, int *rot, int *ok)
                 *ok = 0;
                 break;
             case 0:
-                (*comp)++;
+                (*comp)+= 2;
                 avl->fb = -1;
                 break;
             case -1:
-                (*comp)++;
+                (*comp)+= 3;
                 avl = caso_2(avl, comp, rot, ok);
                 break;
             }
