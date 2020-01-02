@@ -379,21 +379,65 @@ PtAVL* insere_avl(PtAVL *avl, char p[], int *comp, int *rot, int *ok)
  * AVL: ponteiro para a AVL com palavra a ser inserida;
  * COMP: ponteiro para o número de comparações realizadas.
  */
-PtABP* insere_avl_freq(PtABP *abp, PtAVL *avl, int *comp)
+PtAVL* insere_avl_freq(PtAVL *avl, PtAVL *avl1, int *comp, int *rot, int *ok)
 {
-    if(vazia_abp(abp, comp))
+    if(vazia_avl(avl, comp))
     {
-        abp = (PtABP*) malloc(sizeof(PtABP));
-        strcpy(abp->palavra, avl->palavra);
-        abp->frequencia = avl->frequencia;
-        abp->esquerda = NULL;
-        abp->direita = NULL;
+        avl = (PtAVL*) malloc(sizeof(PtAVL));
+        strcpy(avl->palavra, avl1->palavra);
+        avl->esquerda = NULL;
+        avl->direita = NULL;
+        avl->fb = 0;
+        avl->frequencia = avl1->frequencia;
+        *ok = 1;
     }
-    else if(menor(abp->frequencia, avl->frequencia, comp))
-        abp->direita = insere_avl_freq(abp->direita, avl, comp);
+    else if(maior_igual(avl->frequencia, avl1->frequencia, comp))
+    {
+        avl->esquerda = insere_avl_freq(avl->esquerda, avl1, comp, rot, ok);
+        if(*ok)
+        {
+            switch (avl->fb)
+            {
+            case -1:
+                (*comp)++;
+                avl->fb = 0;
+                *ok = 0;
+                break;
+            case 0:
+                (*comp)+= 2;
+                avl->fb = 1;
+                break;
+            case 1:
+                (*comp)+= 3;
+                avl=caso_1(avl, comp, rot, ok);
+                break;
+            }
+        }
+    }
     else
-        abp->esquerda = insere_avl_freq(abp->esquerda, avl, comp);
-    return abp;
+    {
+        avl->direita = insere_avl_freq(avl->direita, avl1, comp, rot, ok);
+        if(*ok)
+        {
+            switch (avl->fb)
+            {
+            case 1:
+                (*comp)++;
+                avl->fb = 0;
+                *ok = 0;
+                break;
+            case 0:
+                (*comp)+= 2;
+                avl->fb = -1;
+                break;
+            case -1:
+                (*comp)+= 3;
+                avl = caso_2(avl, comp, rot, ok);
+                break;
+            }
+        }
+    }
+    return avl;
 }
 
 /**
@@ -464,14 +508,14 @@ void frequencia_avl(FILE *saida, PtAVL *avl, char p[], int *comp)
  * F1: frequência final das palavras buscadas;
  * COMP: ponteiro para o número de comparaçãoes realizadas.
  */
-void contador_avl(PtABP **abp, PtAVL *avl, int f0, int f1, int *comp)
+void contador_avl(PtAVL **abp, PtAVL *avl, int f0, int f1, int *comp, int *rot, int *ok)
 {
     if(!(vazia_avl(avl, comp)))
     {
-        contador_avl(abp, avl->esquerda, f0, f1, comp);
+        contador_avl(abp, avl->esquerda, f0, f1, comp, rot, ok);
         if(maior_igual(avl->frequencia, f0, comp) && menor_igual(avl->frequencia, f1, comp))
-            *abp = insere_avl_freq(*abp, avl, comp);
-        contador_avl(abp, avl->direita, f0, f1, comp);
+            *abp = insere_avl_freq(*abp, avl, comp, rot, ok);
+        contador_avl(abp, avl->direita, f0, f1, comp, rot, ok);
     }
 }
 

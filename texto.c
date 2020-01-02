@@ -43,7 +43,7 @@ void caixa_baixa_avl(FILE *entrada, PtAVL **avl, int *comp_ger, int *rot, int *o
  * AVL1: ponteiro para a AVL resultante da leitura do texto;
  * COMP: ponteiro para o número de comparações realizadas.
  */
-void le_operacoes(FILE *op, FILE *resultado, PtABP *abp, PtAVL *avl, int *comp)
+void le_operacoes(FILE *op, FILE *resultado, PtAVL *abp, PtAVL *avl, int *comp, int *rot, int *ok)
 {
     char *aux, *palavra, linha[LINHAS];
     int f0, f1;
@@ -62,7 +62,7 @@ void le_operacoes(FILE *op, FILE *resultado, PtABP *abp, PtAVL *avl, int *comp)
             {
                 f0 = atoi(strtok(NULL, " "));
                 f1 = atoi(strtok(NULL, "\n"));
-                contador_avl(&abp, avl, f0, f1, comp);
+                contador_avl(&abp, avl, f0, f1, comp, rot, ok);
                 imprime_abp(resultado, abp, f0, f1, comp);
             }
             aux = strtok(NULL, " ");
@@ -87,7 +87,7 @@ void le_operacoes(FILE *op, FILE *resultado, PtABP *abp, PtAVL *avl, int *comp)
  * COMP_GER: número de comparaçãoes realizadas na montagem da AVL oriunda do texto.
  * COMP_REL: número de comparaçãoes executadas no cômputo dos resultados.
  */
-void relatorio_avl(FILE *saida, FILE *resultado, PtAVL *avl, int nodos, int altura, int fb, double miliseconds_ger, double miliseconds_rel, int comp_ger, int comp_rel, int rot)
+void relatorio_avl(FILE *saida, FILE *resultado, PtAVL *avl, int nodos, int altura, int fb, double miliseconds_ger, double miliseconds_rel, int comp_ger, int comp_rel, int rot, int rot_rel)
 {
     char aux;
 
@@ -102,6 +102,7 @@ void relatorio_avl(FILE *saida, FILE *resultado, PtAVL *avl, int nodos, int altu
         fputc(aux, saida);
     fprintf(saida, "\n");
     fprintf(saida, "Tempo: %f s\n", miliseconds_rel);
+    fprintf(saida, "Rotações: %i\n", rot_rel);
     fprintf(saida, "Comparações: %i\n", comp_rel);
     fclose(saida);
     fclose(resultado);

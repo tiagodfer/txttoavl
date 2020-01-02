@@ -10,7 +10,7 @@
 #define PARAM 4
 
 /**
- * TXTTOAVL 1.2.1:
+ * TXTTOAVL 1.2.2:
  * Recebe dois arquivos de texto como entrada, o primeiro é um texto, o segundo um conjunto de operações. Converte todos caracteres do texto para caixa baixa e,
  * passa cada palavra do texto para uma AVL de strings, em seguida, aplica as operações contidas no segundo arquivo e emite um relatório das operações aplicadas e seus resultados.
  * Um otimização na função CONTADOR_AVL evita que se percorra a árvore em vão quando se busca uma frequência a qual nenhuma palavra na AVL tem.
@@ -36,17 +36,19 @@ int main(int argc, char *argv[])
     clock_t start_ger, end_ger, start_rel, end_rel;     //guardam o tempo inicial e final para cálculo do tempo de execução
     FILE *entrada, *op, *resultado, *saida;             //entrada recebe argv[1]; temp recebe o texto convertido para caixa baixa; op recebe argv[2]; resultado recebe o resultado das operações; saida recebe o relatório final
     PtAVL *avl;                                         //avl recebe a árvore binária de pesquisa balanceada (AVL)
-    PtABP *abp;                                         //avl recebe a árvore binária de pesquisa (ABP)
-    int nodos, altura, fb, comp_ger, comp_rel, ok, rot; //nodos recebe o número de nodos; altura recebe a altura da árvore; fb recebe o fator de balanceamento (FB) da árvore; comp_ger recebe o número de comparações realizadas para gerar a árvore binária de pequisa; comp_rel recebe o número de comparações realizadas da geração dos resultados das operações; ok indica se AVL está ok
+    PtAVL *abp;                                         //avl recebe a árvore binária de pesquisa (ABP)
+    int nodos, altura, fb, comp_ger, comp_rel, ok, rot, ok_rel, rot_rel; //nodos recebe o número de nodos; altura recebe a altura da árvore; fb recebe o fator de balanceamento (FB) da árvore; comp_ger recebe o número de comparações realizadas para gerar a árvore binária de pequisa; comp_rel recebe o número de comparações realizadas da geração dos resultados das operações; ok indica se AVL está ok
     double miliseconds_ger, miliseconds_rel;            //miliseconds_ger recebe o tempo de execução da geração da AVL; miliseconds_rel recebe o tempo de execução da geração dos resultados das operações
 
     //inicialização de variáveis
     avl = inicializa_avl();
-    abp = inicializa_abp();
+    abp = inicializa_avl();
     ok = 0;
+    ok_rel = 0;
     comp_ger = 0;
     comp_rel = 0;
     rot = 0;
+    rot_rel = 0;
 
     //início do Programa
     if(argc!=PARAM)
@@ -82,13 +84,13 @@ int main(int argc, char *argv[])
         nodos = conta_avl(avl, &comp_rel);                                 //calcula número de nodos da AVL
         altura = altura_avl(avl, &comp_rel);                               //calcula altura da AVL
         fb = fator_balanceamento_avl(avl, &comp_rel);                      //calcula FB da AVL
-        le_operacoes(op, resultado, abp, avl, &comp_rel);                  //interpreta e realiza as operações solicitadas
+        le_operacoes(op, resultado, abp, avl, &comp_rel, &rot_rel, &ok_rel);                  //interpreta e realiza as operações solicitadas
         resultado = fopen("resultado.txt", "r");                           //abre resultado.txt para leitura
         end_rel = clock();                                                 //finaliza contagem do tempo
         miliseconds_rel = (double)(end_rel - start_rel) / CLOCKS_PER_SEC;  //calcula o tempo decorrido
 
         //gera relatório
-        relatorio_avl(saida, resultado, avl, nodos, altura, fb, miliseconds_ger, miliseconds_rel, comp_ger, comp_rel, rot);
+        relatorio_avl(saida, resultado, avl, nodos, altura, fb, miliseconds_ger, miliseconds_rel, comp_ger, comp_rel, rot, rot_rel);
         return 0;
     }
 }

@@ -2,6 +2,9 @@
 
 ## changelog
 
+### 1.2.2
+- variáveis renomeadas para melhor legibilidade do código.
+
 ### 1.2.1
 - documentação mais detalhada do código.
 
