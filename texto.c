@@ -15,7 +15,7 @@
  * FILE *entrada: ponteiro para o arquivo que serс lido;
  * FILE *saida: ponteiro para o arquivo de saэda;
  */
-void caixa_baixa(FILE *entrada, FILE *saida)
+void caixa_baixa_avl(FILE *entrada, PtAVL **avl, int *comp_ger, int *rot, int *ok)
 {
     char *palavra, linha[LINHAS];
     char separador[]= {" ,.&*%\?!;/'@-\"$#=><()][}{:\n\t"};
@@ -25,38 +25,11 @@ void caixa_baixa(FILE *entrada, FILE *saida)
         palavra = strtok(linha, separador); //tokeniza usando como delimitador os caracteres em "separador"
         while (palavra != NULL)
         {
-            fprintf(saida,"%s\n", strlwr(palavra)); //converte palavras para caixa baixa
+            *avl = insere_avl(*avl, strlwr(palavra), comp_ger, rot, ok); //converte palavras para caixa baixa
             palavra = strtok(NULL, separador);
         }
     }
     fclose (entrada);
-    fclose (saida);
-}
-
-/**
- * LE_PARA_AVL (PTAVL)
- * Retorna AVL contendo as palavras do arquivo lido, computando o nњmero de comparaчѕes necessсria para tal.
- *
- * FILE *entrada: ponteiro para o arquivo que serс lido;
- * COMP_GER: Nњmero de comparaчуoes executadas.
- */
-PtAVL* le_para_avl(FILE *entrada, int *comp_ger, int *rot, int *ok)
-{
-    PtAVL *avl;
-    avl = inicializa_avl();
-    char *palavra, linha[LINHAS];
-
-    while (fgets(linha,LINHAS,entrada)) //percorre todo o arquivo lendo linha a linha
-    {
-        palavra = strtok(linha, "\n"); //tokeniza usando como delimitador o espaчo em branco
-        while (palavra != NULL) //enquanto ler alguma palavra vсlida
-        {
-            avl = insere_avl(avl, palavra, comp_ger, rot, ok); //insere palavra a palavra na AVL, chamando a funчуo insere_avl
-            palavra = strtok (NULL, "\n"); //tokeniza usando como delimitador o espaчo em branco
-        }
-    }
-    fclose(entrada);
-    return avl;
 }
 
 /**
