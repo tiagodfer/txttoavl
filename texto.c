@@ -43,7 +43,7 @@ void caixa_baixa_avl(FILE *entrada, PtAVL **avl, int *comp_ger, int *rot, int *o
  * AVL1: ponteiro para a AVL resultante da leitura do texto;
  * COMP: ponteiro para o número de comparações realizadas.
  */
-void le_operacoes(FILE *op, FILE *resultado, PtAVL *abp, PtAVL *avl, int *comp, int *rot, int *ok)
+void le_operacoes(FILE *op, FILE *resultado, PtAVL *avl0, PtAVL *avl1, int *comp, int *rot, int *ok)
 {
     char *aux, *palavra, linha[LINHAS];
     int f0, f1;
@@ -56,14 +56,15 @@ void le_operacoes(FILE *op, FILE *resultado, PtAVL *abp, PtAVL *avl, int *comp, 
             if(strcmp(aux, "F") == 0 || strcmp(aux, "f") == 0)
             {
                 palavra = strtok(NULL, "\n");
-                frequencia_avl(resultado, avl, palavra, comp);
+                frequencia_avl(resultado, avl1, palavra, comp);
             }
             else if(strcmp(aux, "C") == 0 || strcmp(aux, "c") == 0)
             {
                 f0 = atoi(strtok(NULL, " "));
                 f1 = atoi(strtok(NULL, "\n"));
-                contador_avl(&abp, avl, f0, f1, comp, rot, ok);
-                imprime_abp(resultado, abp, f0, f1, comp);
+                contador_avl(&avl0, avl1, f0, f1, comp, rot, ok);
+                imprime_avl(resultado, avl0, f0, f1, comp);
+                avl0 = destroi_avl(avl0, comp);
             }
             aux = strtok(NULL, " ");
         }
@@ -76,18 +77,19 @@ void le_operacoes(FILE *op, FILE *resultado, PtAVL *abp, PtAVL *avl, int *comp, 
  * RELATORIO_AVL (VOID)
  * Imprime relatório final concatenando as informações obtidas.
  *
- * SAIDA: ponteiro para o arquivo de saída com o relatório final.
- * RESULTADO: ponteiro para o arquivo com os resultados das operações.
- * AVL: ponteiro para a AVL cujos resultados serão exibidos.
- * NODOS: número de nodos da AVL.
- * ALTURA: altura da AVL.
- * FB: fator de balanceamento da AVL.
- * MILISECONDS_GER: tempo de execução da AVL.
- * MILISECONDS_REL: tempo de execução dos resultados.
- * COMP_GER: número de comparaçãoes realizadas na montagem da AVL oriunda do texto.
- * COMP_REL: número de comparaçãoes executadas no cômputo dos resultados.
+ * SAIDA: ponteiro para o arquivo de saída com o relatório final;
+ * RESULTADO: ponteiro para o arquivo com os resultados das operações;
+ * NODOS: número de nodos da AVL;
+ * ALTURA: altura da AVL;
+ * FB: fator de balanceamento da AVL;
+ * MILISECONDS_GER: tempo de execução da AVL;
+ * MILISECONDS_REL: tempo de execução dos resultados;
+ * COMP_GER: número de comparaçãoes realizadas na montagem da AVL oriunda do texto;
+ * COMP_REL: número de comparaçãoes executadas no cômputo dos resultados;
+ * ROT: número de rotações executadas na montagem da AVL oriunda do texto;
+ * ROT_REL: número de rotações executadas no cômputo dos resultados.
  */
-void relatorio_avl(FILE *saida, FILE *resultado, PtAVL *avl, int nodos, int altura, int fb, double miliseconds_ger, double miliseconds_rel, int comp_ger, int comp_rel, int rot, int rot_rel)
+void relatorio_avl(FILE *saida, FILE *resultado, int nodos, int altura, int fb, double miliseconds_ger, double miliseconds_rel, int comp_ger, int comp_rel, int rot, int rot_rel)
 {
     char aux;
 

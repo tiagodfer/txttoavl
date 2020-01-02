@@ -10,37 +10,12 @@
 #define MAX 50
 
 /**
- * INICIALIZA_ABP (PTABP)
- * Inicializa ABP com NULL.
- */
-PtABP* inicializa_abp()
-{
-    return NULL;
-}
-
-/**
  * INICIALIZA_AVL (PTAVL)
  * Inicializa AVL com NULL.
  */
 PtAVL* inicializa_avl()
 {
     return NULL;
-}
-
-/**
- * VAZIA_ABP (INT)
- * Verifica se ABP é vazia e incrementa contador de comparações.
- *
- * ABP: ponteiro para a ABP a ser verificada;
- * COMP: ponteiro para o número de comparações realizadas.
- */
-int vazia_abp(PtABP *abp, int *comp)
-{
-    (*comp)++;
-    if(!abp)
-        return 1;
-    else
-        return 0;
 }
 
 /**
@@ -372,72 +347,75 @@ PtAVL* insere_avl(PtAVL *avl, char p[], int *comp, int *rot, int *ok)
 }
 
 /**
- * INSERE_AVL_FREQ (PTABP)
- * Insere nodo na ABP, desta vez usando frequência como critério, incrementando contador de comparações.
+ * INSERE_AVL_FREQ (PTAVL)
+ * Insere palavra na AVL usando como critério a frequência, incrementando o número de comparações.
  *
- * ABP: ponteiro para a ABP que está recebendo o novo nodo;
- * AVL: ponteiro para a AVL com palavra a ser inserida;
- * COMP: ponteiro para o número de comparações realizadas.
+ * AVL0: ponteiro para a AVL que está recebendo a nova palavra;
+ * AVL1: ponteiro para a AVL onde a palavra que será inserida;
+ * P: ponteiro para a palavra a ser inserido;
+ * COMP: ponteiro para o número de comparações realizadas;
+ * ROT: ponteiro para o número de rotações realizadas;
+ * OK: ponteiro para estado da AVL.
  */
-PtAVL* insere_avl_freq(PtAVL *avl, PtAVL *avl1, int *comp, int *rot, int *ok)
+PtAVL* insere_avl_freq(PtAVL *avl0, PtAVL *avl1, int *comp, int *rot, int *ok)
 {
-    if(vazia_avl(avl, comp))
+    if(vazia_avl(avl0, comp))
     {
-        avl = (PtAVL*) malloc(sizeof(PtAVL));
-        strcpy(avl->palavra, avl1->palavra);
-        avl->esquerda = NULL;
-        avl->direita = NULL;
-        avl->fb = 0;
-        avl->frequencia = avl1->frequencia;
+        avl0 = (PtAVL*) malloc(sizeof(PtAVL));
+        strcpy(avl0->palavra, avl1->palavra);
+        avl0->esquerda = NULL;
+        avl0->direita = NULL;
+        avl0->fb = 0;
+        avl0->frequencia = avl1->frequencia;
         *ok = 1;
     }
-    else if(maior_igual(avl->frequencia, avl1->frequencia, comp))
+    else if(maior_igual(avl0->frequencia, avl1->frequencia, comp))
     {
-        avl->esquerda = insere_avl_freq(avl->esquerda, avl1, comp, rot, ok);
+        avl0->esquerda = insere_avl_freq(avl0->esquerda, avl1, comp, rot, ok);
         if(*ok)
         {
-            switch (avl->fb)
+            switch (avl0->fb)
             {
             case -1:
                 (*comp)++;
-                avl->fb = 0;
+                avl0->fb = 0;
                 *ok = 0;
                 break;
             case 0:
                 (*comp)+= 2;
-                avl->fb = 1;
+                avl0->fb = 1;
                 break;
             case 1:
                 (*comp)+= 3;
-                avl=caso_1(avl, comp, rot, ok);
+                avl0=caso_1(avl0, comp, rot, ok);
                 break;
             }
         }
     }
     else
     {
-        avl->direita = insere_avl_freq(avl->direita, avl1, comp, rot, ok);
+        avl0->direita = insere_avl_freq(avl0->direita, avl1, comp, rot, ok);
         if(*ok)
         {
-            switch (avl->fb)
+            switch (avl0->fb)
             {
             case 1:
                 (*comp)++;
-                avl->fb = 0;
+                avl0->fb = 0;
                 *ok = 0;
                 break;
             case 0:
                 (*comp)+= 2;
-                avl->fb = -1;
+                avl0->fb = -1;
                 break;
             case -1:
                 (*comp)+= 3;
-                avl = caso_2(avl, comp, rot, ok);
+                avl0 = caso_2(avl0, comp, rot, ok);
                 break;
             }
         }
     }
-    return avl;
+    return avl0;
 }
 
 /**
@@ -502,20 +480,20 @@ void frequencia_avl(FILE *saida, PtAVL *avl, char p[], int *comp)
  * CONTADOR_AVL (VOID)
  * Controla a chamada da função AUX_CONTADOR_AVL, chamando uma vez para cada frequência da série solicitada, incrementando contador de comparações.
  *
- * SAIDA: ponteiro para o arquivo de saída;
- * AVL: ponteiro para a AVL onde as palavras serão pesquisadas;
+ * AVL0: ponteiro duplo para a AVL que receberá as palavras com a frequências solicitadas;
+ * AVL1: ponteiro para a AVL onde as palavras serão pesquisadas;
  * F0: frequência inicial das palavras buscadas;
  * F1: frequência final das palavras buscadas;
  * COMP: ponteiro para o número de comparaçãoes realizadas.
  */
-void contador_avl(PtAVL **abp, PtAVL *avl, int f0, int f1, int *comp, int *rot, int *ok)
+void contador_avl(PtAVL **avl0, PtAVL *avl1, int f0, int f1, int *comp, int *rot, int *ok)
 {
-    if(!(vazia_avl(avl, comp)))
+    if(!(vazia_avl(avl1, comp)))
     {
-        contador_avl(abp, avl->esquerda, f0, f1, comp, rot, ok);
-        if(maior_igual(avl->frequencia, f0, comp) && menor_igual(avl->frequencia, f1, comp))
-            *abp = insere_avl_freq(*abp, avl, comp, rot, ok);
-        contador_avl(abp, avl->direita, f0, f1, comp, rot, ok);
+        contador_avl(avl0, avl1->esquerda, f0, f1, comp, rot, ok);
+        if(maior_igual(avl1->frequencia, f0, comp) && menor_igual(avl1->frequencia, f1, comp))
+            *avl0 = insere_avl_freq(*avl0, avl1, comp, rot, ok);
+        contador_avl(avl0, avl1->direita, f0, f1, comp, rot, ok);
     }
 }
 
@@ -586,36 +564,51 @@ int fator_balanceamento_avl(PtAVL *avl, int *comp)
 }
 
 /**
- * AUX_IMPRIME_ABP (VOID)
- * Imprime ABP no arquivo, em ordem decrescente pela frequência, incrementando contador de comparações.
+ * AUX_IMPRIME_AVL (VOID)
+ * Imprime AVL no arquivo, em ordem decrescente pela frequência, incrementando contador de comparações.
  *
  * RESULTADO: ponteiro para o arquivo de saída;
- * ABP: ponteiro para a ABP cuja altura será impressa;
+ * AVL: ponteiro para a AVL cuja altura será impressa;
  * COMP: ponteiro para o número de comparações realizadas.
  */
-void aux_imprime_abp(FILE *resultado, PtABP *abp, int *comp)
+void aux_imprime_avl(FILE *resultado, PtAVL *avl, int *comp)
 {
-    if(!(vazia_abp(abp, comp)))
+    if(!(vazia_avl(avl, comp)))
     {
-        aux_imprime_abp(resultado, abp->direita, comp);
-        fprintf(resultado, "%s: %i\n", abp->palavra, abp->frequencia);
-        aux_imprime_abp(resultado, abp->esquerda, comp);
+        aux_imprime_avl(resultado, avl->direita, comp);
+        fprintf(resultado, "%s: %i\n", avl->palavra, avl->frequencia);
+        aux_imprime_avl(resultado, avl->esquerda, comp);
     }
 }
 
 /**
- * IMPRIME_ABP (VOID)
- * Imprime ABP no arquivo, chama laço de impressão da função auxiliar, em ordem decrescente pela frequência, incrementando contador de comparações.
+ * IMPRIME_AVL (VOID)
+ * Imprime AVL no arquivo, chama laço de impressão da função auxiliar, em ordem decrescente pela frequência, incrementando contador de comparações.
  *
  * RESULTADO: ponteiro para o arquivo de saída;
- * ABP: ponteiro para a ABP cuja altura será impressa;
+ * AVL: ponteiro para a AVL cuja altura será impressa;
  * F0: frequência inicial das palavras buscadas;
  * F1: frequência final das palavras buscadas;
  * COMP: ponteiro para o número de comparações realizadas.
  */
-void imprime_abp(FILE *resultado, PtABP *abp, int f0, int f1, int *comp)
+void imprime_avl(FILE *resultado, PtAVL *avl, int f0, int f1, int *comp)
 {
     fprintf(resultado, "*************************************************************\n");
     fprintf(resultado, "C %i %i\n", f0, f1);
-    aux_imprime_abp(resultado, abp, comp);
+    aux_imprime_avl(resultado, avl, comp);
+}
+
+/**
+ * DESTROI_AVL (PTAVL)
+ * Destroi AVL liberando memória alocada. (optamos por não contabilizar as comparações para destruir)
+ */
+PtAVL *destroi_avl(PtAVL *avl, int *comp)
+{
+    if(!(vazia_avl(avl, comp)))
+    {
+        destroi_avl(avl->esquerda, comp);
+        destroi_avl(avl->direita, comp);
+        free(avl);
+    }
+    return NULL;
 }
